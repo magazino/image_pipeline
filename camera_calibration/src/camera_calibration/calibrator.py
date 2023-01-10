@@ -69,7 +69,8 @@ class ChessboardInfo():
         self.dim = dim
         self.marker_size = marker_size
         self.aruco_dict = None
-        self.charuco_board = None;
+        self.charuco_board = None
+        self.min_corners_detected = n_cols * n_rows / 3
         if pattern=="charuco":
             self.aruco_dict = cv2.aruco.getPredefinedDictionary({
                 "aruco_orig" : cv2.aruco.DICT_ARUCO_ORIGINAL,
@@ -245,23 +246,15 @@ def _get_corners(img, board, refine = True, checkerboard_flags=0):
 
     return (ok, corners)
 
-def _get_charuco_corners(img, board, refine):
+def _get_charuco_corners(img, board):
     """
     Get chessboard corners from image of ChArUco board
     """
-    h = img.shape[0]
-    w = img.shape[1]
-
-    if len(img.shape) == 3 and img.shape[2] == 3:
-        mono = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    else:
-        mono = img
-
     marker_corners, marker_ids, _ = cv2.aruco.detectMarkers(img, board.aruco_dict)
     if len(marker_corners) == 0:
         return (False, None, None)
     _, square_corners, ids = cv2.aruco.interpolateCornersCharuco(marker_corners, marker_ids, img, board.charuco_board)
-    return ((square_corners is not None) and (len(square_corners) > 5), square_corners, ids)
+    return ((square_corners is not None) and (len(square_corners) > board.min_corners_detected), square_corners, ids)
 
 def _get_circles(img, board, pattern):
     """
@@ -500,7 +493,7 @@ class Calibrator():
                 (ok, corners) = _get_corners(img, b, refine, self.checkerboard_flags)
                 ids = None
             elif self.pattern == Patterns.ChArUco:
-                (ok, corners, ids) = _get_charuco_corners(img, b, refine)
+                (ok, corners, ids) = _get_charuco_corners(img, b)
             else:
                 (ok, corners) = _get_circles(img, b, self.pattern)
                 ids = None
