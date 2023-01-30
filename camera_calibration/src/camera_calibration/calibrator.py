@@ -1050,6 +1050,9 @@ class MonoCalibrator(Calibrator):
                         open("/tmp/camera_calibration_%08x.pickle" % random.getrandbits(32), "w"))
         self.cal_fromcorners(self.good_corners)
         self.calibrated = True
+        # DEBUG
+        print((self.report()))
+        print((self.ost()))
 
     def do_tarfile_save(self, tf):
         """ Write images and calibration solution to a tarfile object """
@@ -1457,6 +1460,9 @@ class StereoCalibrator(Calibrator):
         self.r.size = self.size
         rms = self.cal_fromcorners(self.good_corners)
         self.calibrated = True
+        # DEBUG
+        print((self.report()))
+        print((self.ost()))
         return rms
 
     def do_tarfile_save(self, tf):
