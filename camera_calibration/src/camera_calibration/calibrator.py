@@ -316,6 +316,8 @@ class Calibrator():
 
         # Set to true after we perform calibration
         self.calibrated = False
+        # Set to true when calibration is saved
+        self.saved = False
         self.calib_flags = flags
         self.fisheye_calib_flags = fisheye_flags
         self.checkerboard_flags = checkerboard_flags
@@ -666,6 +668,7 @@ class Calibrator():
         tf = tarfile.open(filename, 'w:gz')
         self.do_tarfile_save(tf) # Must be overridden in subclasses
         tf.close()
+        self.saved = True
         print(("Wrote calibration data to", filename))
 
 def image_from_archive(archive, name):

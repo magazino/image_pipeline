@@ -350,6 +350,7 @@ class OpenCVCalibrationNode(CalibrationNode):
                     self.queue_display.put(self._last_display)
             if self.c.calibrated:
                 if 280 <= y < 380:
+                    self.buttons(self._last_display)
                     self.c.do_save()
                 elif 380 <= y < 480:
                     # Only shut down if we set camera info correctly, #3993
@@ -382,8 +383,8 @@ class OpenCVCalibrationNode(CalibrationNode):
 
     def buttons(self, display):
         x = self.displaywidth
-        self.button(display[180:280,x:x+100], "CALIBRATE", self.c.goodenough)
-        self.button(display[280:380,x:x+100], "SAVE", self.c.calibrated)
+        self.button(display[180:280,x:x+100], "CALIBRATE", self.c.goodenough and not self.c.calibrated)
+        self.button(display[280:380,x:x+100], "SAVE", self.c.calibrated and not self.c.saved)
         self.button(display[380:480,x:x+100], "COMMIT", self.c.calibrated)
 
     def y(self, i):
